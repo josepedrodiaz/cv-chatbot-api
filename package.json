@@ -17,10 +17,10 @@
   ],
   "author": "Pedro Díaz",
   "license": "MIT",
-  "dependencies": {
-    "@google/generative-ai": "^0.24.1"
-  },
   "devDependencies": {
     "vercel": "^33.0.0"
+  },
+  "dependencies": {
+    "@google/genai": "^1.38.0"
   }
 }

@@ -1,16 +1,5 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenAI } from '@google/genai';
 import { pedroContext, chatbotInstructions } from '../context/pedro-info.js';
-
-// Initialize Gemini AI
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-
-// CORS headers for cross-origin requests from portfolio site
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*', // In production, replace with your portfolio domain
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
-  'Content-Type': 'application/json',
-};
 
 /**
  * Main chat endpoint handler
@@ -65,45 +54,31 @@ export default async function handler(req, res) {
       });
     }
 
-    // Initialize the model
-    const model = genAI.getGenerativeModel({
-      model: 'gemini-pro',
-      generationConfig: {
-        temperature: 0.7,
-        topK: 40,
-        topP: 0.95,
-        maxOutputTokens: 1024,
-      },
+    // Initialize the AI client
+    const ai = new GoogleGenAI({
+      apiKey: process.env.GEMINI_API_KEY
     });
 
-    // Build the conversation context
+    // Build the full prompt with context
     const systemPrompt = `${chatbotInstructions}\n\n## Pedro's Information:\n${pedroContext}`;
 
-    // Format conversation history for Gemini
-    const history = conversationHistory.map(msg => ({
-      role: msg.role === 'user' ? 'user' : 'model',
-      parts: [{ text: msg.content }],
-    }));
+    // Build conversation history
+    let fullPrompt = systemPrompt + '\n\n';
+    if (conversationHistory.length > 0) {
+      fullPrompt += '## Previous Conversation:\n';
+      conversationHistory.forEach(msg => {
+        fullPrompt += `${msg.role === 'user' ? 'User' : 'Assistant'}: ${msg.content}\n`;
+      });
+    }
+    fullPrompt += `\nUser: ${message}\nAssistant:`;
 
-    // Start chat with history
-    const chat = model.startChat({
-      history: [
-        {
-          role: 'user',
-          parts: [{ text: systemPrompt }],
-        },
-        {
-          role: 'model',
-          parts: [{ text: 'I understand. I will answer questions about Pedro Díaz professionally and helpfully, using only the information provided.' }],
-        },
-        ...history,
-      ],
+    // Generate response using Gemini
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.0-flash-exp',
+      contents: fullPrompt
     });
 
-    // Send the message and get response
-    const result = await chat.sendMessage(message);
-    const response = await result.response;
-    const responseText = response.text();
+    const responseText = response.text;
 
     // Return the response
     return res.status(200).json({
@@ -137,12 +112,3 @@ export default async function handler(req, res) {
     });
   }
 }
-
-// Set response headers for all responses
-export const config = {
-  api: {
-    bodyParser: {
-      sizeLimit: '1mb',
-    },
-  },
-};
