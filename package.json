@@ -1,6 +1,7 @@
 {
   "name": "cv-chatbot-api",
   "version": "0.1.0",
+  "type": "module",
   "description": "AI chatbot microservice API for Pedro Díaz's portfolio - powered by Google Gemini",
   "main": "api/chat.js",
   "scripts": {
