@@ -1,7 +1,14 @@
 import { GoogleGenAI } from '@google/genai';
 import { pedroContext, chatbotInstructions } from '../context/pedro-info.js';
 
-const ALLOWED_ORIGIN = 'https://josepedrodiaz.com';
+const ALLOWED_ORIGINS = [
+  'https://josepedrodiaz.com',
+  'https://www.josepedrodiaz.com',
+];
+
+if (process.env.NODE_ENV !== 'production') {
+  ALLOWED_ORIGINS.push('http://localhost:8000', 'http://localhost:3000');
+}
 
 /**
  * Main chat endpoint handler
@@ -11,8 +18,8 @@ const ALLOWED_ORIGIN = 'https://josepedrodiaz.com';
 export default async function handler(req, res) {
   // Set CORS headers for all responses
   const origin = req.headers.origin;
-  if (origin === ALLOWED_ORIGIN) {
-    res.setHeader('Access-Control-Allow-Origin', ALLOWED_ORIGIN);
+  if (ALLOWED_ORIGINS.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
   }
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -20,7 +27,7 @@ export default async function handler(req, res) {
 
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
-    return res.status(200).json({ ok: true });
+    return res.status(204).end();
   }
 
   // Only accept POST requests

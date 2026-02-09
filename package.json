@@ -5,7 +5,7 @@
   "description": "AI chatbot microservice API for Pedro Díaz's portfolio - powered by Google Gemini",
   "main": "api/chat.js",
   "scripts": {
-    "dev": "vercel dev",
+    "dev": "npx -y vercel@latest dev",
     "deploy": "vercel --prod"
   },
   "keywords": [
@@ -18,7 +18,7 @@
   "author": "Pedro Díaz",
   "license": "MIT",
   "devDependencies": {
-    "vercel": "^33.0.0"
+    "vercel": "^50.0.0"
   },
   "dependencies": {
     "@google/genai": "^1.38.0"
