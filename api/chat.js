@@ -1,6 +1,8 @@
 import { GoogleGenAI } from '@google/genai';
 import { pedroContext, chatbotInstructions } from '../context/pedro-info.js';
 
+const ALLOWED_ORIGIN = 'https://josepedrodiaz.com';
+
 /**
  * Main chat endpoint handler
  * @param {Request} req - Incoming request
@@ -8,7 +10,10 @@ import { pedroContext, chatbotInstructions } from '../context/pedro-info.js';
  */
 export default async function handler(req, res) {
   // Set CORS headers for all responses
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  const origin = req.headers.origin;
+  if (origin === ALLOWED_ORIGIN) {
+    res.setHeader('Access-Control-Allow-Origin', ALLOWED_ORIGIN);
+  }
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   res.setHeader('Content-Type', 'application/json');
@@ -74,7 +79,7 @@ export default async function handler(req, res) {
 
     // Generate response using Gemini
     const response = await ai.models.generateContent({
-      model: 'gemini-2.0-flash',
+      model: 'gemini-2.5-flash-lite',
       contents: fullPrompt
     });
 
