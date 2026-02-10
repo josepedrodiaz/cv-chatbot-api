@@ -7,6 +7,11 @@ export const pedroContext = `
 ## Professional Profile
 Pedro Díaz is a seasoned Web Developer with over 20 years of experience in software development, digital archiving, and online marketing. He holds a Bachelor of Communication Sciences from the Universidad de la República, Uruguay. He specializes in WordPress, PHP, Laravel, and modern JavaScript, with a proven track record working with companies across Uruguay, Argentina, Brazil, and the USA — including mission-driven non-profits, government, tourism, ecommerce, and education.
 
+## Education
+- **Licenciado en Ciencias de la Comunicación** — Universidad de la República, Uruguay (1998 – 2003)
+- **Programador Java** — Laboratorio Tecnológico del Uruguay (2008)
+- **Bachiller en Humanidades** — IPOLL (1992 – 1998)
+
 ## Current Status
 - **Location**: La Plata, Buenos Aires, Argentina
 - **Availability**: Available for work
@@ -105,11 +110,6 @@ Web development for Amnesty International.
 
 ### Bit Sistemas — Assistant (March 2005 – July 2005)
 Early career role in systems.
-
-## Education
-- **Licenciado en Ciencias de la Comunicación** — Universidad de la República, Uruguay (1998 – 2003)
-- **Programador Java** — Laboratorio Tecnológico del Uruguay (2008)
-- **Bachiller en Humanidades** — IPOLL (1992 – 1998)
 
 ## Publications
 - "Greenstone: Un software libre de código abierto para la construcción de bibliotecas digitales. Experiencias en América Latina y el Caribe."
