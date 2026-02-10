@@ -39,8 +39,7 @@ Portfolio Website (GitHub Pages)
 ### 1. Clone and Install
 
 ```bash
-cd /Users/pedro/projects
-git clone <your-repo-url> cv-chatbot-api
+git clone https://github.com/josepedrodiaz/cv-chatbot-api.git
 cd cv-chatbot-api
 npm install
 ```
@@ -132,9 +131,9 @@ Send a message to the chatbot.
 ## 🔐 Security
 
 - API keys stored in environment variables (never in code)
-- Input validation (max 500 characters)
-- CORS configuration (update in production to your domain only)
-- Rate limiting via Gemini API (60 requests/minute free tier)
+- Input validation (max 500 characters, conversation history validated and sanitized)
+- CORS restricted to `josepedrodiaz.com` and `www.josepedrodiaz.com` in production (localhost only in development)
+- Webhook URL guard on lead capture function
 
 ## 📝 Updating Information
 
@@ -152,26 +151,29 @@ To update Pedro's professional information:
 - Verify environment variable in Vercel dashboard
 
 **CORS errors**
-- Update `corsHeaders` in `api/chat.js` with your domain
-- For development, `*` is acceptable
+- CORS is configured in `lib/cors.js` — production only allows `josepedrodiaz.com`
+- Localhost origins are added automatically when `NODE_ENV !== 'production'`
 
 **Rate limit errors**
-- Gemini free tier: 60 requests/minute
-- Wait a moment and retry
-- Consider caching common responses
+- Gemini 2.5 Flash Lite free tier: 10 RPM, 25 RPD
+- Daily limit resets at midnight Pacific Time
 
 ## 📦 Project Structure
 
 ```
 cv-chatbot-api/
 ├── api/
-│   └── chat.js              # Main API endpoint
+│   ├── chat.js              # Main chat endpoint (Gemini + function calling)
+│   └── health.js            # Health check endpoint
 ├── context/
 │   └── pedro-info.js        # Pedro's professional context
+├── lib/
+│   └── cors.js              # Centralized CORS configuration
 ├── .env                     # Environment variables (gitignored)
 ├── .env.example             # Example environment file
 ├── .gitignore              # Git ignore rules
 ├── package.json            # Dependencies
+├── package-lock.json       # Locked dependency versions
 ├── vercel.json             # Vercel config
 ├── CLAUDE.md               # Development guidelines
 └── README.md               # This file

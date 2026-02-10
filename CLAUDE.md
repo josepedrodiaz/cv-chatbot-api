@@ -28,13 +28,17 @@ This is a serverless API microservice that powers the AI chatbot on Pedro Díaz'
 ```
 cv-chatbot-api/
 ├── api/
-│   └── chat.js              # Main API endpoint handler
+│   ├── chat.js              # Main chat endpoint (Gemini + function calling)
+│   └── health.js            # Health check endpoint (no quota usage)
 ├── context/
 │   └── pedro-info.js        # Pedro's professional context for AI
+├── lib/
+│   └── cors.js              # Centralized CORS configuration
 ├── .env                     # Environment variables (not in git)
 ├── .env.example             # Example env file
 ├── .gitignore              # Git ignore rules
 ├── package.json            # Dependencies and scripts
+├── package-lock.json       # Locked dependency versions
 ├── vercel.json             # Vercel deployment config
 ├── CLAUDE.md               # This file
 └── README.md               # Setup and usage instructions
@@ -197,21 +201,20 @@ POST https://your-project.vercel.app/api/chat
 - Use different keys for development and production
 
 ### CORS
-- Currently set to `*` (allow all origins) for development
-- **In production**: Update `corsHeaders` in `api/chat.js` to only allow your portfolio domain:
-  ```javascript
-  'Access-Control-Allow-Origin': 'https://josepedrodiaz.github.io'
-  ```
+- Configured in `lib/cors.js` (centralized, shared across all endpoints)
+- **Production origins**: `josepedrodiaz.com`, `www.josepedrodiaz.com`
+- **Development**: `localhost:8000` and `localhost:3000` added only when `NODE_ENV !== 'production'`
 
 ### Rate Limiting
-- Gemini free tier: 60 requests/minute
-- Consider implementing client-side throttling in portfolio site
-- Add server-side rate limiting if needed
+- Gemini 2.5 Flash Lite free tier: **10 RPM, 25 RPD, 250K TPM**
+- Daily limit resets at midnight Pacific Time
+- The lead capture fallback mechanism uses 2 API calls per lead
 
 ### Input Validation
 - Maximum message length: 500 characters
 - Only accepts POST requests
 - Validates message format
+- `conversationHistory` validated: must be array, max 20 entries, each entry max 2000 chars, extra fields stripped
 
 ## Updating Pedro's Information
 
@@ -230,9 +233,9 @@ When Pedro's professional information changes:
 - For production: verify environment variable in Vercel dashboard
 
 ### "Rate limit exceeded"
-- Gemini free tier limit reached (60/min)
-- Wait a moment and try again
-- Consider caching responses for common questions
+- Gemini free tier limit reached (10 RPM or 25 RPD)
+- Daily limit resets at midnight Pacific Time (4 AM Argentina)
+- Don't run many test calls in sequence — burns through daily quota fast
 
 ### CORS errors
 - Verify `Access-Control-Allow-Origin` header
