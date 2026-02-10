@@ -1,6 +1,12 @@
+import { setCorsHeaders } from '../lib/cors.js';
+
 export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  setCorsHeaders(req, res);
   res.setHeader('Content-Type', 'application/json');
+
+  if (req.method === 'OPTIONS') {
+    return res.status(204).end();
+  }
 
   if (!process.env.GEMINI_API_KEY) {
     return res.status(503).json({ ok: false });
