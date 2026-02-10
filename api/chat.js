@@ -1,4 +1,4 @@
-import { GoogleGenAI, Type } from '@google/genai';
+import { GoogleGenAI, Type, FunctionCallingConfigMode } from '@google/genai';
 import { pedroContext, chatbotInstructions } from '../context/pedro-info.js';
 
 const ALLOWED_ORIGINS = [
@@ -33,6 +33,13 @@ async function saveLeadToSheet(args) {
     body: JSON.stringify(args),
   });
   return { success: res.ok };
+}
+
+const EMAIL_REGEX = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/;
+
+function conversationContainsEmail(message, history) {
+  if (EMAIL_REGEX.test(message)) return true;
+  return history.some(msg => msg.role === 'user' && EMAIL_REGEX.test(msg.content));
 }
 
 /**
@@ -120,12 +127,29 @@ export default async function handler(req, res) {
     // Generate response using Gemini
     let response = await ai.models.generateContent(generateConfig);
 
-    // Handle function call if Gemini wants to save a lead
+    // Fallback: if no function call but conversation contains an email, force extraction
+    if (!response.functionCalls?.length && process.env.GOOGLE_SHEETS_WEBHOOK_URL
+        && conversationContainsEmail(message, conversationHistory)) {
+      response = await ai.models.generateContent({
+        ...generateConfig,
+        config: {
+          ...generateConfig.config,
+          toolConfig: {
+            functionCallingConfig: {
+              mode: FunctionCallingConfigMode.ANY,
+              allowedFunctionNames: ['save_lead'],
+            },
+          },
+        },
+      });
+    }
+
+    // Handle function call (from first or fallback attempt)
     if (response.functionCalls?.length > 0) {
       const call = response.functionCalls[0];
 
       let result = { success: false };
-      if (call.name === 'save_lead' && process.env.GOOGLE_SHEETS_WEBHOOK_URL) {
+      if (call.name === 'save_lead') {
         result = await saveLeadToSheet(call.args);
       }
 
