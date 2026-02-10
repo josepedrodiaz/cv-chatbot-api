@@ -1,4 +1,4 @@
-import { GoogleGenAI } from '@google/genai';
+import { GoogleGenAI, Type } from '@google/genai';
 import { pedroContext, chatbotInstructions } from '../context/pedro-info.js';
 
 const ALLOWED_ORIGINS = [
@@ -8,6 +8,31 @@ const ALLOWED_ORIGINS = [
 
 if (process.env.NODE_ENV !== 'production') {
   ALLOWED_ORIGINS.push('http://localhost:8000', 'http://localhost:3000');
+}
+
+const saveLeadDeclaration = {
+  name: 'save_lead',
+  description: 'Save contact information when a visitor provides their name and email/phone to get in touch with Pedro.',
+  parameters: {
+    type: Type.OBJECT,
+    properties: {
+      name:    { type: Type.STRING, description: 'Full name of the person' },
+      email:   { type: Type.STRING, description: 'Email address' },
+      phone:   { type: Type.STRING, description: 'Phone number' },
+      message: { type: Type.STRING, description: 'What they want to discuss or context' },
+    },
+    required: ['name'],
+  },
+};
+
+async function saveLeadToSheet(args) {
+  const webhookUrl = process.env.GOOGLE_SHEETS_WEBHOOK_URL;
+  const res = await fetch(webhookUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(args),
+  });
+  return { success: res.ok };
 }
 
 /**
@@ -71,24 +96,48 @@ export default async function handler(req, res) {
       apiKey: process.env.GEMINI_API_KEY
     });
 
-    // Build the full prompt with context
     const systemPrompt = `${chatbotInstructions}\n\n## Pedro's Information:\n${pedroContext}`;
 
-    // Build conversation history
-    let fullPrompt = systemPrompt + '\n\n';
-    if (conversationHistory.length > 0) {
-      fullPrompt += '## Previous Conversation:\n';
-      conversationHistory.forEach(msg => {
-        fullPrompt += `${msg.role === 'user' ? 'User' : 'Assistant'}: ${msg.content}\n`;
+    // Build structured Content[]
+    const contents = [];
+    for (const msg of conversationHistory) {
+      contents.push({
+        role: msg.role === 'user' ? 'user' : 'model',
+        parts: [{ text: msg.content }],
       });
     }
-    fullPrompt += `\nUser: ${message}\nAssistant:`;
+    contents.push({ role: 'user', parts: [{ text: message }] });
+
+    const generateConfig = {
+      model: 'gemini-2.5-flash-lite',
+      contents,
+      config: {
+        systemInstruction: systemPrompt,
+        tools: [{ functionDeclarations: [saveLeadDeclaration] }],
+      },
+    };
 
     // Generate response using Gemini
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash-lite',
-      contents: fullPrompt
-    });
+    let response = await ai.models.generateContent(generateConfig);
+
+    // Handle function call if Gemini wants to save a lead
+    if (response.functionCalls?.length > 0) {
+      const call = response.functionCalls[0];
+
+      let result = { success: false };
+      if (call.name === 'save_lead' && process.env.GOOGLE_SHEETS_WEBHOOK_URL) {
+        result = await saveLeadToSheet(call.args);
+      }
+
+      // Send function result back to get final text response
+      contents.push(response.candidates[0].content);
+      contents.push({
+        role: 'user',
+        parts: [{ functionResponse: { name: call.name, response: { result } } }],
+      });
+
+      response = await ai.models.generateContent(generateConfig);
+    }
 
     const responseText = response.text;
 
