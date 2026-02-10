@@ -14,8 +14,8 @@ Pedro Díaz is a seasoned Web Developer with over 20 years of experience in soft
 
 ## Current Status
 - **Location**: La Plata, Buenos Aires, Argentina
-- **Availability**: Open to new opportunities — actively seeking full-time or contract roles
-- **Most Recent Role**: Web Developer at Radish Lab (ended February 2026)
+- **Current Role**: Freelance WordPress & AI Developer (2026 – Present)
+- **Availability**: Open to new opportunities — available for full-time or contract roles
 - **Languages**: English (Professional Working), Spanish (Native), Portuguese
 
 ## Core Expertise
@@ -41,8 +41,11 @@ Pedro Díaz is a seasoned Web Developer with over 20 years of experience in soft
 
 ## Featured Projects
 
-### Radish Lab (Most Recent Position)
-Web Developer at a New York-based agency specializing in digital solutions for non-profit organizations (2021–2026).
+### Freelance WordPress & AI Developer (Current)
+Independent developer offering WordPress development and AI integration services. Building custom AI-powered features for client websites, including chatbot integrations using Google Gemini API with serverless architectures (Vercel, Node.js).
+
+### Radish Lab
+Web Developer at a New York-based agency specializing in digital solutions for non-profit organizations (March 2021 – February 2026, 5 years).
 
 **Notable Projects:**
 1. **Clinton Foundation** - Contributed to redesigning the Clinton Foundation's digital platform
@@ -80,6 +83,9 @@ Developed electronic records management system for government operations.
 - Administrative interfaces for government officials
 
 ## Full Work Experience
+
+### Freelance WordPress & AI Developer (February 2026 – Present)
+Independent developer specializing in WordPress solutions and AI integrations. Building serverless APIs, chatbot systems with Google Gemini, and custom web applications.
 
 ### Radish Lab — Web Developer (March 2021 – February 2026)
 New York-based agency specializing in digital solutions for non-profit organizations.

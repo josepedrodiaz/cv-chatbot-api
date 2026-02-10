@@ -19,6 +19,10 @@ const saveLeadDeclaration = {
 
 async function saveLeadToSheet(args) {
   const webhookUrl = process.env.GOOGLE_SHEETS_WEBHOOK_URL;
+  if (!webhookUrl) {
+    console.error('GOOGLE_SHEETS_WEBHOOK_URL not configured');
+    return { success: false, error: 'Webhook not configured' };
+  }
   const res = await fetch(webhookUrl, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -57,7 +61,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { message, conversationHistory = [] } = req.body;
+    const { message, conversationHistory: rawHistory } = req.body;
 
     // Validate input
     if (!message || typeof message !== 'string') {
@@ -74,6 +78,17 @@ export default async function handler(req, res) {
         message: 'Please keep your message under 500 characters'
       });
     }
+
+    // Validate and sanitize conversationHistory
+    const conversationHistory = (Array.isArray(rawHistory) ? rawHistory : [])
+      .filter(msg =>
+        msg && typeof msg === 'object'
+        && ['user', 'assistant'].includes(msg.role)
+        && typeof msg.content === 'string'
+        && msg.content.length <= 2000
+      )
+      .slice(-20)
+      .map(({ role, content }) => ({ role, content }));
 
     // Check if API key is configured
     if (!process.env.GEMINI_API_KEY) {
