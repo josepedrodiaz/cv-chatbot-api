@@ -5,12 +5,12 @@ export const pedroContext = `
 # Pedro Díaz - Senior Full-Stack Developer
 
 ## Professional Profile
-Pedro Díaz is a seasoned Senior Full-Stack Developer with over 15 years of experience building robust, scalable web applications. He specializes in WordPress, PHP, Laravel, and modern JavaScript frameworks, with a proven track record of delivering high-quality solutions for mission-driven organizations.
+Pedro Díaz is a seasoned Web Developer with over 20 years of experience in software development, digital archiving, and online marketing. He holds a Bachelor of Communication Sciences from the Universidad de la República, Uruguay. He specializes in WordPress, PHP, Laravel, and modern JavaScript, with a proven track record working with companies across Uruguay, Argentina, Brazil, and the USA — including mission-driven non-profits, government, tourism, ecommerce, and education.
 
 ## Current Status
 - **Location**: La Plata, Buenos Aires, Argentina
 - **Availability**: Available for work
-- **Languages**: English and Spanish (bilingual)
+- **Languages**: English (Professional Working), Spanish (Native), Portuguese
 
 ## Core Expertise
 
@@ -73,14 +73,49 @@ Developed electronic records management system for government operations.
 - Digital signatures implementation
 - Administrative interfaces for government officials
 
-## Work Experience Summary
+## Full Work Experience
 
-### Technical Roles:
-- **Web Developer** - Radish Lab (current)
-- **Full Stack Developer** - ProZ.com
-- **Software Developer** - Buenos Aires Government projects
+### Radish Lab — Web Developer (March 2021 – Present)
+New York-based agency specializing in digital solutions for non-profit organizations.
+WordPress development for high-profile clients.
 
-### Technologies Used Across Projects:
+### ProZ.com — Developer (March 2020 – March 2021)
+Maintained the technology platform for the world's largest community of translation professionals (1.6M+ users).
+
+### Ministerio de Producción de la Provincia de Buenos Aires — Full Stack Developer (March 2019 – March 2020)
+Developed an electronic records management system for government operations.
+
+### Optimous — Full-stack Developer (January 2018 – February 2019)
+Development of different systems for multiple clients in Buenos Aires.
+
+### Le Utopik — Ecommerce Manager (January 2017 – January 2018)
+Ecommerce management in Greater Buenos Aires.
+
+### El Misti Hostels & Pousadas — Technology Manager (June 2010 – June 2017)
+7 years managing technology for a hostel chain in Rio de Janeiro, Brazil.
+
+### Universidad de la República — Professor (2007 – 2011)
+Taught Digital Archives and Internet content creation for 4 years.
+
+### Universia — Tecnología (April 2005 – October 2010)
+Technology role spanning 5+ years.
+
+### Amnistía Internacional — Web Manager (2009)
+Web development for Amnesty International.
+
+### Bit Sistemas — Assistant (March 2005 – July 2005)
+Early career role in systems.
+
+## Education
+- **Licenciado en Ciencias de la Comunicación** — Universidad de la República, Uruguay (1998 – 2003)
+- **Programador Java** — Laboratorio Tecnológico del Uruguay (2008)
+- **Bachiller en Humanidades** — IPOLL (1992 – 1998)
+
+## Publications
+- "Greenstone: Un software libre de código abierto para la construcción de bibliotecas digitales. Experiencias en América Latina y el Caribe."
+- "Experiencias con Greenstone en Latinoamérica y el Caribe"
+
+## Technologies Used Across Projects
 - **Backend**: WordPress Core, PHP 7.x/8.x, Laravel, MySQL
 - **Frontend**: Modern JavaScript (ES6+), jQuery, HTML5/CSS3, Tailwind CSS
 - **Tools**: Git, Composer, npm, Webpack, Sage Roots
