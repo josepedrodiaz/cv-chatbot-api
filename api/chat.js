@@ -43,10 +43,22 @@ async function saveLeadToSheet(args) {
 }
 
 const EMAIL_REGEX = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/;
+// Secuencia con forma de teléfono: dígitos con + / espacios / ( ) . - de por medio.
+const PHONE_REGEX = /\+?\d[\d\s().-]{6,}\d/g;
 
-function conversationContainsEmail(message, history) {
-  if (EMAIL_REGEX.test(message)) return true;
-  return history.some(msg => msg.role === 'user' && EMAIL_REGEX.test(msg.content));
+function textHasPhone(text) {
+  // Sacar rangos de años (2015-2023) antes de buscar: en un CV son constantes
+  // y se leerían como un número de 8 dígitos.
+  const cleaned = text.replace(/\b(19|20)\d{2}\s*[-–—]\s*(19|20)\d{2}\b/g, ' ');
+  const candidates = cleaned.match(PHONE_REGEX) || [];
+  // Exigir >= 8 dígitos reales evita falsos positivos (montos, años sueltos).
+  return candidates.some(c => c.replace(/\D/g, '').length >= 8);
+}
+
+function conversationHasContact(message, history) {
+  const hasContact = (text) => EMAIL_REGEX.test(text) || textHasPhone(text);
+  if (hasContact(message)) return true;
+  return history.some(msg => msg.role === 'user' && hasContact(msg.content));
 }
 
 /**
@@ -139,9 +151,10 @@ export default async function handler(req, res) {
     // Generate response using Gemini
     let response = await ai.models.generateContent(generateConfig);
 
-    // Fallback: if no function call but conversation contains an email, force extraction
+    // Fallback: if no function call but conversation has contact info (email or
+    // phone), force extraction so we don't drop the lead.
     if (!response.functionCalls?.length && process.env.GOOGLE_SHEETS_WEBHOOK_URL
-        && conversationContainsEmail(message, conversationHistory)) {
+        && conversationHasContact(message, conversationHistory)) {
       response = await ai.models.generateContent({
         ...generateConfig,
         config: {
