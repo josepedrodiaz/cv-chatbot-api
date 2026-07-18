@@ -23,12 +23,23 @@ async function saveLeadToSheet(args) {
     console.error('GOOGLE_SHEETS_WEBHOOK_URL not configured');
     return { success: false, error: 'Webhook not configured' };
   }
-  const res = await fetch(webhookUrl, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(args),
-  });
-  return { success: res.ok };
+  try {
+    // Apps Script responde con un 302 al /echo cuando el doPost ya corrió y
+    // escribió la fila. No seguimos ese redirect: la página de echo devuelve
+    // un status inestable (a veces 405) y genera falsos negativos.
+    const res = await fetch(webhookUrl, {
+      method: 'POST',
+      redirect: 'manual',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(args),
+    });
+    // 2xx directo o 3xx (redirect al echo) => el doPost se ejecutó.
+    const ok = res.ok || (res.status >= 300 && res.status < 400) || res.status === 0;
+    return { success: ok };
+  } catch (err) {
+    console.error('saveLeadToSheet failed', err);
+    return { success: false };
+  }
 }
 
 const EMAIL_REGEX = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/;
